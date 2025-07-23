@@ -3,6 +3,7 @@
 #include "map.h"
 #include "error.h"
 #include <cmath>
+#include "priorityqueue.h"
 using namespace std;
 
 Map<string, double> kGramsIn(const string& str, int kGramLength) {
@@ -49,18 +50,37 @@ Map<string, double> topKGramsIn(const Map<string, double>& source, int numToKeep
     /* TODO: Delete this comment and the other lines here, then implement
      * this function.
      */
-    (void) source;
-    (void) numToKeep;
-    return {};
+    Map<string, double> result;
+    if (numToKeep == 0) return result;
+    else if (numToKeep < 0) error("numToKeep cant be zero.");
+    else {
+        if (source.size() <= numToKeep) return source;
+        PriorityQueue<string> pq;
+        for (string key : source) {
+            pq.enqueue(key, source[key]);
+        }
+        while (pq.size() != numToKeep) {
+            pq.dequeue();
+        }
+        while (!pq.isEmpty()) {
+            string key = pq.dequeue();
+            result.put(key, source[key]);
+        }
+    }
+    return result;
 }
 
 double cosineSimilarityOf(const Map<string, double>& lhs, const Map<string, double>& rhs) {
     /* TODO: Delete this comment and the other lines here, then implement
      * this function.
      */
-    (void) lhs;
-    (void) rhs;
-    return {};
+    double result = 0;
+    for (string lhsKey : lhs) {
+        for (string rhsKey : rhs) {
+            if (lhsKey == rhsKey) result += lhs[lhsKey] * rhs[rhsKey];
+        }
+    }
+    return result;
 }
 
 string guessLanguageOf(const Map<string, double>& textProfile,
