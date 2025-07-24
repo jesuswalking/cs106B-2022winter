@@ -75,11 +75,7 @@ double cosineSimilarityOf(const Map<string, double>& lhs, const Map<string, doub
      * this function.
      */
     double result = 0;
-    for (string lhsKey : lhs) {
-        for (string rhsKey : rhs) {
-            if (lhsKey == rhsKey) result += lhs[lhsKey] * rhs[rhsKey];
-        }
-    }
+    for (string lhsKey : lhs) if (rhs.containsKey(lhsKey)) result += lhs[lhsKey] * rhs[lhsKey];
     return result;
 }
 
@@ -88,9 +84,17 @@ string guessLanguageOf(const Map<string, double>& textProfile,
     /* TODO: Delete this comment and the other lines here, then implement
      * this function.
      */
-    (void) textProfile;
-    (void) corpora;
-    return "";
+    if (corpora.isEmpty()) error("corpora is empty.");
+    double cosine = 0;
+    string languageName;
+    for (Corpus corpora : corpora) {
+        double result = cosineSimilarityOf(textProfile, corpora.profile);
+        if (cosine < result) {
+            languageName = corpora.name;
+            cosine = result;
+        }
+    }
+    return languageName;
 }
 
 
